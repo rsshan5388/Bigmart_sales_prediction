@@ -47,8 +47,8 @@ model = load_trained_pipeline()
 
 
 st.title("🛒 BigMart Sales Prediction App")
-
-st.markdown(f"Using **scikit-learn v{sklearn_version}** model to predict item sales.")
+st.markdown(f"Using **scikit-learn v{sklearn.__version__}** to run predictions.")
+#st.markdown(f"Using **scikit-learn v{sklearn_version}** model to predict item sales.")
 
 # === User Inputs ===
 Item_Identifier = st.text_input("Item Identifier", "FDA15")
@@ -94,5 +94,6 @@ if st.button("Predict Sales"):
     # Make prediction
     prediction = model.predict(input_df)[0]
     st.success(f"📈 Predicted Item Outlet Sales: ₹{prediction:.2f}")
+
 
 
