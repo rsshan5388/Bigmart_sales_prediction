@@ -1,10 +1,50 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import json
+from pathlib import Path
+
+import streamlit as st
+from joblib import load
+import sklearn
+@st.cache_resource
+def load_trained_pipeline():
+    # if the model file sits next to app.py
+    model_path = Path(__file__).with_name("bigmart_best_model.joblib")
+    if not model_path.exists():  # optional fallback name
+        model_path = Path(__file__).with_name("bigmart_best_model.pkl")
+
+    model = load(model_path)  # joblib.load
+
+    # Optional: warn if scikit-learn version differs from training
+    meta_path = Path(__file__).with_name("model_meta.json")
+    if meta_path.exists():
+        with open(meta_path) as f:
+            meta = json.load(f)
+        trained = meta.get("sklearn")
+        if trained and trained.split(".")[:2] != sklearn.__version__.split(".")[:2]:
+            st.warning(
+                f"Model trained with scikit-learn {trained}, "
+                f"current environment has {sklearn.__version__}. "
+                "Version mismatch can cause runtime errors."
+            )
+    return model
+
+model = load_trained_pipeline()
+
+
+
+
+
+
+
+
+
+
+
 
 # === Load Model and Version Info from Pickle ===
-with open("bigmart_best_model.joblib", "rb") as f:
-    model, sklearn_version = pickle.load(f)
+
 
 st.title("🛒 BigMart Sales Prediction App")
 
@@ -54,4 +94,5 @@ if st.button("Predict Sales"):
     # Make prediction
     prediction = model.predict(input_df)[0]
     st.success(f"📈 Predicted Item Outlet Sales: ₹{prediction:.2f}")
+
 
